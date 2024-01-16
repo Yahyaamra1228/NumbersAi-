@@ -1,0 +1,53 @@
+# Install scikit-learn
+!pip install -U scikit-learn
+
+# Import necessary libraries
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.preprocessing import MinMaxScaler
+import matplotlib.pyplot as plt
+
+# Load the MNIST digits dataset
+digits = datasets.load_digits()
+
+# Split the dataset into features (X) and labels (y)
+X, y = digits.data, digits.target
+
+# Scale pixel values to the range [0, 1]
+scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Split the scaled data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Create an MLP (Multi-layer Perceptron) classifier with more complexity
+model = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000, alpha=1e-4, solver='sgd', random_state=42, learning_rate_init=0.1)
+
+# Train the model
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy:.2%}")
+
+# Display classification report and confusion matrix
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+# Visualize some predictions
+fig, axes = plt.subplots(3, 5, figsize=(10, 6))
+for i, ax in enumerate(axes.flat):
+    ax.imshow(X_test[i].reshape(8, 8), cmap='gray')
+    ax.set_title(f"True: {y_test[i]}, Pred: {y_pred[i]}")
+    ax.axis('off')
+
+plt.show()
+
